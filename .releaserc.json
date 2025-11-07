@@ -1,5 +1,8 @@
 {
-  "branches": ["+([0-9])?(.{+([0-9]),x}).x", "main"],
+  "branches": [
+  "main",
+  { "name": "v*.*.*", "range": "v*.*.*", "channel": "latest" }
+],
   "plugins": [
     [
       "@semantic-release/commit-analyzer",
