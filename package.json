@@ -24,6 +24,8 @@
   ],
   "scripts": {
     "build": "rollup -c",
+    "start": "node server.js",
+    "dev": "npm run build && npm start",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "lint": "eslint 'src/**/*.js'",
     "lint:fix": "eslint 'src/**/*.js' --fix",
