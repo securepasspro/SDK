@@ -7,14 +7,20 @@ class SecurePassSDK {
   constructor(apiKey, options = {}) {
     this.apiKey = apiKey;
     // Use actual deployed URL or allow custom baseURL
-    this.baseURL = options.baseURL || (typeof window !== 'undefined' 
-      ? `${window.location.origin}/api` 
-      : 'https://securepasspro.co/api');
+    this.baseURL =
+      options.baseURL ||
+      (typeof window !== "undefined"
+        ? `${window.location.origin}/api`
+        : "https://securepasspro.co/api");
     this.timeout = options.timeout || 10000;
 
     // Security: Validate API key format (should start with spro_ for enterprise)
-    if (!this.apiKey || typeof this.apiKey !== 'string' || this.apiKey.length < 10) {
-      throw new Error('Invalid API key provided');
+    if (
+      !this.apiKey ||
+      typeof this.apiKey !== "string" ||
+      this.apiKey.length < 10
+    ) {
+      throw new Error("Invalid API key provided");
     }
   }
 
@@ -26,15 +32,15 @@ class SecurePassSDK {
   async generatePassword(options = {}) {
     try {
       const length = Math.min(Math.max(options.length || 16, 8), 64); // Secure limits
-      const response = await this._makeRequest('/password', {
-        method: 'POST',
+      const response = await this._makeRequest("/password", {
+        method: "POST",
         body: JSON.stringify({
           length: length,
           includeUppercase: options.includeUppercase !== false,
           includeLowercase: options.includeLowercase !== false,
           includeNumbers: options.includeNumbers !== false,
-          includeSymbols: options.includeSymbols !== false
-        })
+          includeSymbols: options.includeSymbols !== false,
+        }),
       });
 
       return response;
@@ -55,9 +61,12 @@ class SecurePassSDK {
     const length = Math.min(Math.max(options.length || 16, 8), 64);
 
     try {
-      const response = await this._makeRequest(`/generate-bulk?count=${maxCount}&length=${length}`, {
-        method: 'POST'
-      });
+      const response = await this._makeRequest(
+        `/generate-bulk?count=${maxCount}&length=${length}`,
+        {
+          method: "POST",
+        },
+      );
 
       return response;
     } catch (error) {
@@ -73,7 +82,7 @@ class SecurePassSDK {
   async getTeamInfo(teamId) {
     try {
       const response = await this._makeRequest(`/team?teamId=${teamId}`, {
-        method: 'GET'
+        method: "GET",
       });
       return response;
     } catch (error) {
@@ -88,16 +97,16 @@ class SecurePassSDK {
    * @param {string} role - Member role (admin, member)
    * @returns {Promise<Object>} Operation result
    */
-  async addTeamMember(teamId, memberEmail, role = 'member') {
+  async addTeamMember(teamId, memberEmail, role = "member") {
     try {
-      const response = await this._makeRequest('/team', {
-        method: 'POST',
+      const response = await this._makeRequest("/team", {
+        method: "POST",
         body: JSON.stringify({
-          action: 'add_member',
+          action: "add_member",
           teamId,
           memberEmail,
-          role
-        })
+          role,
+        }),
       });
       return response;
     } catch (error) {
@@ -113,13 +122,13 @@ class SecurePassSDK {
    */
   async removeTeamMember(teamId, memberEmail) {
     try {
-      const response = await this._makeRequest('/team', {
-        method: 'POST',
+      const response = await this._makeRequest("/team", {
+        method: "POST",
         body: JSON.stringify({
-          action: 'remove_member',
+          action: "remove_member",
           teamId,
-          memberEmail
-        })
+          memberEmail,
+        }),
       });
       return response;
     } catch (error) {
@@ -136,14 +145,14 @@ class SecurePassSDK {
    */
   async updateTeamMemberRole(teamId, memberEmail, role) {
     try {
-      const response = await this._makeRequest('/team', {
-        method: 'POST',
+      const response = await this._makeRequest("/team", {
+        method: "POST",
         body: JSON.stringify({
-          action: 'update_role',
+          action: "update_role",
           teamId,
           memberEmail,
-          role
-        })
+          role,
+        }),
       });
       return response;
     } catch (error) {
@@ -151,15 +160,18 @@ class SecurePassSDK {
     }
   }
 
-
   /**
    * Test API connection
    * @returns {Promise<Object>} Connection status
    */
   async testConnection() {
     try {
-      const response = await this._makeRequest('/test');
-      return { success: true, message: 'API connection successful', data: response };
+      const response = await this._makeRequest("/test");
+      return {
+        success: true,
+        message: "API connection successful",
+        data: response,
+      };
     } catch (error) {
       return { success: false, message: error.message };
     }
@@ -171,8 +183,8 @@ class SecurePassSDK {
    */
   async getUsage() {
     try {
-      const response = await this._makeRequest('/user', {
-        method: 'GET'
+      const response = await this._makeRequest("/user", {
+        method: "GET",
       });
       return response;
     } catch (error) {
@@ -188,19 +200,19 @@ class SecurePassSDK {
     const url = `${this.baseURL}${endpoint}`;
 
     // Security: Input validation
-    if (!endpoint || typeof endpoint !== 'string') {
-      throw new Error('Invalid endpoint');
+    if (!endpoint || typeof endpoint !== "string") {
+      throw new Error("Invalid endpoint");
     }
 
     const config = {
-      method: options.method || 'GET',
+      method: options.method || "GET",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`,
-        'User-Agent': 'SecurePass-SDK/1.0.0'
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.apiKey}`,
+        "User-Agent": "SecurePass-SDK/1.0.0",
       },
       timeout: this.timeout,
-      ...options
+      ...options,
     };
 
     // Security: Add request body if provided
@@ -214,20 +226,23 @@ class SecurePassSDK {
 
       const response = await fetch(url, {
         ...config,
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+        throw new Error(
+          errorData.message ||
+            `HTTP ${response.status}: ${response.statusText}`,
+        );
       }
 
       return await response.json();
     } catch (error) {
-      if (error.name === 'AbortError') {
-        throw new Error('Request timeout');
+      if (error.name === "AbortError") {
+        throw new Error("Request timeout");
       }
       throw error;
     }
@@ -238,6 +253,6 @@ class SecurePassSDK {
 export default SecurePassSDK;
 
 // CommonJS export for Node.js
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof module !== "undefined" && module.exports) {
   module.exports = SecurePassSDK;
 }
