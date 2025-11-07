@@ -7,15 +7,16 @@
       "channel": "latest"
     }
   ],
+  "tagFormat": "v${version}",
   "plugins": [
     [
       "@semantic-release/commit-analyzer",
       {
         "preset": "angular",
         "releaseRules": [
-          { "type": "docs", "scope": "README", "release": "patch" },
-          { "type": "refactor", "release": "patch" },
-          { "type": "style", "release": "patch" }
+          { "type": "docs", "scope": "README", "release": false },
+          { "type": "refactor", "release": false },
+          { "type": "style", "release": false }
         ]
       }
     ],
@@ -43,7 +44,7 @@
       "@semantic-release/git",
       {
         "assets": ["package.json", "package-lock.json", "CHANGELOG.md"],
-        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        "message": "release: ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ]
   ]
