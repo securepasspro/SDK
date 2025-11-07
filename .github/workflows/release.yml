@@ -1,46 +1,36 @@
-name: Release
+name: Build, Test & Release
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*.*.*'
 
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  id-token: write
-
 jobs:
   release:
-    name: Build, Test & Release
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version: 20
           registry-url: 'https://registry.npmjs.org/'
 
       - name: Install dependencies
-        
-        run: npm clean-install
+        run: npm ci
 
       - name: Verify build
         run: npm run build
 
       - name: Run tests
         run: npm test
-
-      - name: Run linter (skip for now)
-        run: echo "Skipping lint step"
 
       - name: Release
         env:
