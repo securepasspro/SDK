@@ -1,6 +1,6 @@
 # SecurePass Pro JavaScript SDK
 
-[![npm version](https://badge.fury.io/js/%40securepasspro%2Fsdk.svg)](https://badge.fury.io/js/%40securepasspro%2Fsdk)
+[![npm version](https://img.shields.io/npm/v/@securepasspro/sdk.svg?style=flat-square)](https://www.npmjs.com/package/@securepasspro/sdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Security](https://img.shields.io/badge/Security-Cryptographically%20Secure-brightgreen.svg)](https://securepasspro.co)
 
