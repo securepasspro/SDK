@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecurePass Pro SDK - Browser Example</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #0070f3;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #0051cc;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border-left: 4px solid #0070f3;
+        }
+        .password {
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: #0070f3;
+            word-break: break-all;
+        }
+        .error {
+            background: #fee;
+            border-left-color: #f00;
+            color: #c00;
+        }
+        .success {
+            background: #efe;
+            border-left-color: #0a0;
+            color: #060;
+        }
+        .info {
+            background: #e6f3ff;
+            border-left-color: #0070f3;
+            color: #004085;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 SecurePass Pro SDK</h1>
+        <p class="subtitle">Browser Example - Generate Secure Passwords</p>
+
+        <div class="info">
+            <strong>📖 How to use:</strong><br>
+            1. Enter your API key (starts with <code>spro_</code>)<br>
+            2. Click "Test Connection" to verify your API key<br>
+            3. Click "Generate Password" to create a secure password<br>
+            4. Click "Generate Bulk" to create multiple passwords
+        </div>
+
+        <div class="input-group">
+            <label for="apiKey">API Key:</label>
+            <input 
+                type="password" 
+                id="apiKey" 
+                placeholder="spro_your-api-key-here"
+                value=""
+            >
+        </div>
+
+        <button onclick="testConnection()">Test Connection</button>
+        <button onclick="generatePassword()">Generate Password</button>
+        <button onclick="generateBulk()">Generate Bulk (5 passwords)</button>
+        <button onclick="checkUsage()">Check Usage</button>
+
+        <div id="result"></div>
+    </div>
+
+    <!-- Load SDK from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@securepasspro/sdk@latest/dist/securepasspro.min.js"></script>
+    <!-- OR use ES Module -->
+    <!-- <script type="module" src="example-browser.js"></script> -->
+
+    <script>
+        // Initialize SDK (will be set when API key is provided)
+        let sdk = null;
+
+        function getApiKey() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            if (!apiKey) {
+                showError('Please enter your API key');
+                return null;
+            }
+            if (!apiKey.startsWith('spro_')) {
+                showError('API key must start with "spro_"');
+                return null;
+            }
+            return apiKey;
+        }
+
+        function initializeSDK() {
+            const apiKey = getApiKey();
+            if (!apiKey) return null;
+            
+            if (!sdk || sdk.apiKey !== apiKey) {
+                sdk = new SecurePassSDK(apiKey, {
+                    baseURL: 'https://securepasspro.com/api'
+                });
+            }
+            return sdk;
+        }
+
+        async function testConnection() {
+            const sdkInstance = initializeSDK();
+            if (!sdkInstance) return;
+
+            showLoading('Testing connection...');
+
+            try {
+                const result = await sdkInstance.testConnection();
+                if (result.success) {
+                    showSuccess(`✅ Connection successful!<br>
+                        User: ${result.data?.user?.email || 'N/A'}<br>
+                        Plan: ${result.data?.user?.plan || 'N/A'}<br>
+                        API Key ID: ${result.data?.apiKey?.id || 'N/A'}
+                    `);
+                } else {
+                    showError('Connection failed: ' + result.message);
+                }
+            } catch (error) {
+                showError('Error: ' + error.message);
+            }
+        }
+
+        async function generatePassword() {
+            const sdkInstance = initializeSDK();
+            if (!sdkInstance) return;
+
+            showLoading('Generating password...');
+
+            try {
+                const result = await sdkInstance.generatePassword({
+                    length: 16,
+                    includeUppercase: true,
+                    includeLowercase: true,
+                    includeNumbers: true,
+                    includeSymbols: true
+                });
+
+                showSuccess(`✅ Password generated!<br>
+                    <div class="password">${result.password}</div><br>
+                    Strength: ${result.strength}<br>
+                    Entropy: ${result.entropy}<br>
+                    Quota remaining: ${result.quota?.remaining || 'N/A'}
+                `);
+            } catch (error) {
+                showError('Error: ' + error.message);
+            }
+        }
+
+        async function generateBulk() {
+            const sdkInstance = initializeSDK();
+            if (!sdkInstance) return;
+
+            showLoading('Generating bulk passwords...');
+
+            try {
+                const result = await sdkInstance.generateBulkPasswords(5, {
+                    length: 16
+                });
+
+                let passwordsHtml = result.passwords.map((pwd, i) => 
+                    `<div class="password">${i + 1}. ${pwd}</div>`
+                ).join('');
+
+                showSuccess(`✅ Generated ${result.count} passwords!<br>
+                    ${passwordsHtml}<br>
+                    Quota remaining: ${result.quota?.remaining || 'N/A'}
+                `);
+            } catch (error) {
+                showError('Error: ' + error.message);
+            }
+        }
+
+        async function checkUsage() {
+            const sdkInstance = initializeSDK();
+            if (!sdkInstance) return;
+
+            showLoading('Checking usage...');
+
+            try {
+                const usage = await sdkInstance.getUsage();
+
+                showSuccess(`✅ Usage Information:<br>
+                    Plan: ${usage.plan}<br>
+                    Used: ${usage.usedGenerations}/${usage.passwordLimit}<br>
+                    Remaining: ${usage.passwordLimit - usage.usedGenerations}<br>
+                    API Quota: ${usage.apiKey?.quotaRemaining || 'N/A'}
+                `);
+            } catch (error) {
+                showError('Error: ' + error.message);
+            }
+        }
+
+        function showLoading(message) {
+            document.getElementById('result').innerHTML = 
+                `<div class="result">${message}</div>`;
+        }
+
+        function showSuccess(message) {
+            document.getElementById('result').innerHTML = 
+                `<div class="result success">${message}</div>`;
+        }
+
+        function showError(message) {
+            document.getElementById('result').innerHTML = 
+                `<div class="result error">${message}</div>`;
+        }
+    </script>
+</body>
+</html>
+

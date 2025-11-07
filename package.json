@@ -1,0 +1,80 @@
+{
+  "name": "@securepasspro/sdk",
+  "version": "1.0.1",
+  "type": "module",
+  "description": "Official JavaScript SDK for SecurePass Pro – secure password generation and API integration with 256-bit encryption.",
+  "main": "dist/securepasspro.js",
+  "module": "dist/securepasspro.esm.js",
+  "types": "dist/securepasspro.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/securepasspro.esm.js",
+      "require": "./dist/securepasspro.js",
+      "types": "./dist/securepasspro.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "examples",
+    "README.md",
+    "GETTING_STARTED.md",
+    "USAGE_EXAMPLES.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "lint": "eslint 'src/**/*.js'",
+    "prepublishOnly": "npm run build && npm test",
+    "semantic-release": "semantic-release"
+  },
+  "keywords": [
+    "securepass",
+    "securepasspro",
+    "password",
+    "security",
+    "sdk",
+    "encryption",
+    "api",
+    "rollup",
+    "typescript",
+    "nodejs",
+    "browser",
+    "auth"
+  ],
+  "author": "SecurePass Pro Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/securepasspro/sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/securepasspro/sdk/issues"
+  },
+  "homepage": "https://securepasspro.co",
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.5",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.7.0",
+    "rollup": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "dependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "semantic-release": "^24.2.9"
+  }
+}
